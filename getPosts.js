@@ -1,20 +1,26 @@
 // Get Post Requests Server.
+
+// Hints: Please Run The api_server.js file in the terminal first.
+
 const http = require('http');
 const PORT = 5000;
 const fs = require('fs');
-const https = require('https');
+const axios = require("axios")
 const API_URL = "http://127.0.0.1:3000/posts"
 
-https.get(API_URL, (resp) => {
-  let data = ''
+async function getPosts() {
+  try{
+    const response = await axios.get(API_URL)
+    const results = response.data
+    let data = JSON.stringify(results)
 
-  resp.on('data', (chunk) => {
-    data += chunk;
-  })
+    fs.writeFile("./result/posts.json", data, 'utf8' , (err) => {
+      if (err) console.log(err.message)
+      console.log("Data Was Successfully Written Into The File (posts.json)")
+    })
+  }catch(err){
+    console.log(err.message)
+  }
+}
 
-  resp.on('end', () => {
-    console.log(JSON.parse(data))
-  })
-}).on('error', (err) => {
-  console.log(`Error: ${err.message}`)
-})
+getPosts()
